@@ -12,7 +12,7 @@ part 'database.g.dart';
 @DriftDatabase(
     // relative import for the drift file. Drift also supports `package:`
     // imports
-    tables: [Item])
+    tables: [Items])
 class AppDb extends _$AppDb {
   AppDb() : super(_openConnection());
 

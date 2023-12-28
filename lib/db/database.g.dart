@@ -3,11 +3,11 @@
 part of 'database.dart';
 
 // ignore_for_file: type=lint
-class $ItemTable extends Item with TableInfo<$ItemTable, ItemData> {
+class $ItemsTable extends Items with TableInfo<$ItemsTable, Item> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $ItemTable(this.attachedDatabase, [this._alias]);
+  $ItemsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -38,9 +38,9 @@ class $ItemTable extends Item with TableInfo<$ItemTable, ItemData> {
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'item';
+  static const String $name = 'items';
   @override
-  VerificationContext validateIntegrity(Insertable<ItemData> instance,
+  VerificationContext validateIntegrity(Insertable<Item> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -71,9 +71,9 @@ class $ItemTable extends Item with TableInfo<$ItemTable, ItemData> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  ItemData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  Item map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return ItemData(
+    return Item(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       name: attachedDatabase.typeMapping
@@ -86,17 +86,17 @@ class $ItemTable extends Item with TableInfo<$ItemTable, ItemData> {
   }
 
   @override
-  $ItemTable createAlias(String alias) {
-    return $ItemTable(attachedDatabase, alias);
+  $ItemsTable createAlias(String alias) {
+    return $ItemsTable(attachedDatabase, alias);
   }
 }
 
-class ItemData extends DataClass implements Insertable<ItemData> {
+class Item extends DataClass implements Insertable<Item> {
   final int id;
   final String name;
   final String type;
   final int price;
-  const ItemData(
+  const Item(
       {required this.id,
       required this.name,
       required this.type,
@@ -111,8 +111,8 @@ class ItemData extends DataClass implements Insertable<ItemData> {
     return map;
   }
 
-  ItemCompanion toCompanion(bool nullToAbsent) {
-    return ItemCompanion(
+  ItemsCompanion toCompanion(bool nullToAbsent) {
+    return ItemsCompanion(
       id: Value(id),
       name: Value(name),
       type: Value(type),
@@ -120,10 +120,10 @@ class ItemData extends DataClass implements Insertable<ItemData> {
     );
   }
 
-  factory ItemData.fromJson(Map<String, dynamic> json,
+  factory Item.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return ItemData(
+    return Item(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       type: serializer.fromJson<String>(json['type']),
@@ -141,8 +141,7 @@ class ItemData extends DataClass implements Insertable<ItemData> {
     };
   }
 
-  ItemData copyWith({int? id, String? name, String? type, int? price}) =>
-      ItemData(
+  Item copyWith({int? id, String? name, String? type, int? price}) => Item(
         id: id ?? this.id,
         name: name ?? this.name,
         type: type ?? this.type,
@@ -150,7 +149,7 @@ class ItemData extends DataClass implements Insertable<ItemData> {
       );
   @override
   String toString() {
-    return (StringBuffer('ItemData(')
+    return (StringBuffer('Item(')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('type: $type, ')
@@ -164,25 +163,25 @@ class ItemData extends DataClass implements Insertable<ItemData> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is ItemData &&
+      (other is Item &&
           other.id == this.id &&
           other.name == this.name &&
           other.type == this.type &&
           other.price == this.price);
 }
 
-class ItemCompanion extends UpdateCompanion<ItemData> {
+class ItemsCompanion extends UpdateCompanion<Item> {
   final Value<int> id;
   final Value<String> name;
   final Value<String> type;
   final Value<int> price;
-  const ItemCompanion({
+  const ItemsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.type = const Value.absent(),
     this.price = const Value.absent(),
   });
-  ItemCompanion.insert({
+  ItemsCompanion.insert({
     this.id = const Value.absent(),
     required String name,
     required String type,
@@ -190,7 +189,7 @@ class ItemCompanion extends UpdateCompanion<ItemData> {
   })  : name = Value(name),
         type = Value(type),
         price = Value(price);
-  static Insertable<ItemData> custom({
+  static Insertable<Item> custom({
     Expression<int>? id,
     Expression<String>? name,
     Expression<String>? type,
@@ -204,12 +203,12 @@ class ItemCompanion extends UpdateCompanion<ItemData> {
     });
   }
 
-  ItemCompanion copyWith(
+  ItemsCompanion copyWith(
       {Value<int>? id,
       Value<String>? name,
       Value<String>? type,
       Value<int>? price}) {
-    return ItemCompanion(
+    return ItemsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       type: type ?? this.type,
@@ -237,7 +236,7 @@ class ItemCompanion extends UpdateCompanion<ItemData> {
 
   @override
   String toString() {
-    return (StringBuffer('ItemCompanion(')
+    return (StringBuffer('ItemsCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('type: $type, ')
@@ -249,10 +248,10 @@ class ItemCompanion extends UpdateCompanion<ItemData> {
 
 abstract class _$AppDb extends GeneratedDatabase {
   _$AppDb(QueryExecutor e) : super(e);
-  late final $ItemTable item = $ItemTable(this);
+  late final $ItemsTable items = $ItemsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [item];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [items];
 }
