@@ -1,14 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:shop_price_list/db/database.dart';
 
 class AddItemDialog extends StatefulWidget {
+  final VoidCallback onItemAdded;
+
+  const AddItemDialog({super.key, required this.onItemAdded});
+
   @override
   _AddItemDialogState createState() => _AddItemDialogState();
 }
 
 class _AddItemDialogState extends State<AddItemDialog> {
   String name = '';
-  String price = '';
   String type = 'piece';
+  int price = 0;
+
+  final AppDb db = AppDb();
+  final _formKey = GlobalKey<FormState>();
+
+  Future createItem() => db.createItemRepo(name, type, price);
 
   @override
   Widget build(BuildContext context) {
@@ -26,78 +36,92 @@ class _AddItemDialogState extends State<AddItemDialog> {
           )
         ],
       ),
-      content: SizedBox(
-        height: 210,
-        width: MediaQuery.of(context).size.width * 0.9,
-        child: Column(
-          children: [
-            TextField(
-              decoration: const InputDecoration(labelText: "Name", border: OutlineInputBorder()),
-              onChanged: (value) {
-                setState(() {
-                  name = value;
-                });
-              },
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            TextField(
-              decoration: const InputDecoration(labelText: "Price", border: OutlineInputBorder()),
-              onChanged: (value) {
-                setState(() {
-                  price = value;
-                });
-              },
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-            Row(
-              children: [
-                const SizedBox(
-                  width: 8,
-                ),
-                const Text(
-                  "Type: ",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                const SizedBox(
-                  width: 16,
-                ),
-                DropdownButton(
-                  value: type,
-                  items: [
-                    DropdownMenuItem(
-                      value: "piece",
-                      onTap: () {
-                        type = "piece";
-                      },
-                      child: const SizedBox(
-                        width: 165,
-                        child: Text("Piece"),
+      content: Form(
+        key: _formKey,
+        child: SizedBox(
+          height: 250,
+          width: MediaQuery.of(context).size.width * 0.9,
+          child: Column(
+            children: [
+              TextFormField(
+                decoration: const InputDecoration(labelText: "Name", border: OutlineInputBorder()),
+                onChanged: (value) {
+                  setState(() {
+                    name = value;
+                  });
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Name is required';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: "Price", border: OutlineInputBorder()),
+                onChanged: (value) {
+                  setState(() {
+                    price = int.tryParse(value) ?? 0;
+                  });
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Price is required';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Row(
+                children: [
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  const Text(
+                    "Type: ",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  const SizedBox(
+                    width: 16,
+                  ),
+                  DropdownButton(
+                    value: type,
+                    items: [
+                      DropdownMenuItem(
+                        value: "piece",
+                        onTap: () {
+                          type = "piece";
+                        },
+                        child: const SizedBox(
+                          width: 165,
+                          child: Text("Piece"),
+                        ),
                       ),
-                    ),
-                    DropdownMenuItem(
-                      value: "box",
-                      onTap: () {
-                        type = "box";
-                      },
-                      child: const SizedBox(
-                        width: 165,
-                        child: Text("Box"),
+                      DropdownMenuItem(
+                        value: "box",
+                        onTap: () {
+                          type = "box";
+                        },
+                        child: const SizedBox(
+                          width: 165,
+                          child: Text("Box"),
+                        ),
                       ),
-                    ),
-                  ],
-                  onChanged: (value) {
-                    setState(() {
-                      type = value!;
-                    });
-                  },
-                ),
-              ],
-            ),
-          ],
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        type = value!;
+                      });
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       actions: [
@@ -106,8 +130,48 @@ class _AddItemDialogState extends State<AddItemDialog> {
             backgroundColor: MaterialStateProperty.all(Colors.green),
             minimumSize: MaterialStateProperty.all(const Size(double.infinity, 48.0)),
           ),
-          onPressed: () {
-            Navigator.of(context).pop();
+          onPressed: () async {
+            if (_formKey.currentState?.validate() ?? false) {
+              // Form is valid, show loading indicator
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              );
+
+              // Attempt to create the item
+              final success = await createItem();
+
+              // Dismiss the loading indicator
+              Navigator.of(context).pop();
+
+              // Show feedback to the user
+              if (success != null) {
+                // Show success message (you can customize this)
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Item added successfully!'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+
+                widget.onItemAdded.call();
+
+                Navigator.of(context).pop();
+              } else {
+                // Show error message (you can customize this)
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Failed to add item. Please try again.'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              }
+            }
           },
           child: const Text(
             'Add',
