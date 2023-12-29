@@ -18,6 +18,34 @@ class AppDb extends _$AppDb {
 
   @override
   int get schemaVersion => 1;
+
+  Future<Item> createItemRepo(String name, String type, int price) async {
+    return await into(items).insertReturning(ItemsCompanion.insert(
+      name: name,
+      type: type,
+      price: price,
+    ));
+  }
+
+  Future<List<Item>> getAllItemsRepo() async {
+    return await select(items).get();
+  }
+
+  Future<Item> getItemByIdRepo(int id) async {
+    return await (select(items)..where((tbl) => tbl.id.equals(id))).getSingle();
+  }
+
+  Future<int> updateItemByIdRepo(int id, Item item) async {
+    return await (update(items)..where((tbl) => tbl.id.equals(id))).write(ItemsCompanion(
+      name: Value(item.name),
+      price: Value(item.price),
+      type: Value(item.type),
+    ));
+  }
+
+  Future<int> deleteItemByIdRepo(int id) async {
+    return await (delete(items)..where((tbl) => tbl.id.equals(id))).go();
+  }
 }
 
 LazyDatabase _openConnection() {
