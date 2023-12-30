@@ -3,9 +3,9 @@ import 'package:shop_price_list/db/database.dart';
 
 class EditItemDialog extends StatefulWidget {
   final Item item;
-  final void Function()? onUpdate;
+  final VoidCallback refresh;
 
-  const EditItemDialog({Key? key, required this.item, this.onUpdate}) : super(key: key);
+  const EditItemDialog({Key? key, required this.item, required this.refresh}) : super(key: key);
 
   @override
   _EditItemDialogState createState() => _EditItemDialogState();
@@ -36,7 +36,7 @@ class _EditItemDialogState extends State<EditItemDialog> {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text("Add Item"),
+          const Text("Edit Item"),
           IconButton(
             onPressed: () {
               Navigator.of(context).pop();
@@ -102,20 +102,14 @@ class _EditItemDialogState extends State<EditItemDialog> {
                         onTap: () {
                           type = "piece";
                         },
-                        child: const SizedBox(
-                          width: 165,
-                          child: Text("Piece"),
-                        ),
+                        child: const SizedBox(width: 165, child: Text("Piece")),
                       ),
                       DropdownMenuItem(
                         value: "box",
                         onTap: () {
                           type = "box";
                         },
-                        child: const SizedBox(
-                          width: 165,
-                          child: Text("Box"),
-                        ),
+                        child: const SizedBox(width: 165, child: Text("Box")),
                       ),
                     ],
                     onChanged: (value) {
@@ -138,7 +132,6 @@ class _EditItemDialogState extends State<EditItemDialog> {
           ),
           onPressed: () async {
             if (_formKey.currentState?.validate() ?? false) {
-              // Form is valid, show loading indicator
               showDialog(
                 context: context,
                 barrierDismissible: false,
@@ -156,27 +149,25 @@ class _EditItemDialogState extends State<EditItemDialog> {
                 price: price,
               );
 
-              // Attempt to update the item
               final result = await updateItemById(widget.item.id, item);
-              print("Updated: $result");
+
+              // Close the progress indicator
+              Navigator.of(context).pop();
 
               if (!result.isNaN) {
-                // Dismiss the loading indicator
+                widget.refresh.call();
+
                 Navigator.of(context).pop();
 
-                // Show success message (you can customize this)
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Item updated successfully!'),
                     duration: Duration(seconds: 2),
                   ),
                 );
-
-                widget.onUpdate?.call();
-
-                Navigator.of(context).pop();
               } else {
-                // Show error message (you can customize this)
+                Navigator.of(context).pop();
+
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Failed to update item. Please try again.'),
