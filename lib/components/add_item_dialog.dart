@@ -78,16 +78,12 @@ class _AddItemDialogState extends State<AddItemDialog> {
               ),
               Row(
                 children: [
-                  const SizedBox(
-                    width: 8,
-                  ),
+                  const SizedBox(width: 8),
                   const Text(
                     "Type: ",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
-                  const SizedBox(
-                    width: 16,
-                  ),
+                  const SizedBox(width: 16),
                   DropdownButton(
                     value: type,
                     items: [
@@ -132,7 +128,6 @@ class _AddItemDialogState extends State<AddItemDialog> {
           ),
           onPressed: () async {
             if (_formKey.currentState?.validate() ?? false) {
-              // Form is valid, show loading indicator
               showDialog(
                 context: context,
                 barrierDismissible: false,
@@ -143,15 +138,11 @@ class _AddItemDialogState extends State<AddItemDialog> {
                 },
               );
 
-              // Attempt to create the item
               final success = await createItem();
 
-              // Dismiss the loading indicator
               Navigator.of(context).pop();
 
-              // Show feedback to the user
               if (success != null) {
-                // Show success message (you can customize this)
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Item added successfully!'),
@@ -163,7 +154,6 @@ class _AddItemDialogState extends State<AddItemDialog> {
 
                 Navigator.of(context).pop();
               } else {
-                // Show error message (you can customize this)
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Failed to add item. Please try again.'),
