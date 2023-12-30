@@ -20,11 +20,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   late Future<List<Item>> items = getAllItems();
 
   late List<Widget> pages = [
-    PriceListPage(
-      items: items,
-      refresh: refresh,
-    ),
-    const CartPage()
+    PriceListPage(items: items, refresh: refresh),
+    const CartPage(),
   ];
 
   @override
@@ -51,11 +48,8 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     setState(() {
       items = getAllItems();
       pages = [
-        PriceListPage(
-          items: items,
-          refresh: refresh,
-        ),
-        const CartPage()
+        PriceListPage(items: items, refresh: refresh),
+        const CartPage(),
       ];
     });
   }
@@ -85,10 +79,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
           },
           backgroundColor: Colors.green,
           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(999))),
-          child: const Icon(
-            Icons.add,
-            color: Colors.white,
-          ),
+          child: const Icon(Icons.add, color: Colors.white),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
