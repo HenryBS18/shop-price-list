@@ -20,9 +20,10 @@ class _ItemPriceListState extends State<ItemPriceList> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Expanded(
-              child: Center(
-            child: CircularProgressIndicator(),
-          ));
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
         }
 
         if (snapshot.hasData && snapshot.data!.isNotEmpty) {
@@ -41,8 +42,13 @@ class _ItemPriceListState extends State<ItemPriceList> {
           );
         }
 
-        return const Center(
-          child: Text("No Data"),
+        return const Expanded(
+          child: Center(
+            child: Text(
+              "No Data",
+              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+            ),
+          ),
         );
       },
     );
