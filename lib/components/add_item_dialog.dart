@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shop_price_list/bloc/items_bloc/items_bloc.dart';
 import 'package:shop_price_list/db/database.dart';
 
 class AddItemDialog extends StatefulWidget {
-  final VoidCallback onItemAdded;
-
-  const AddItemDialog({super.key, required this.onItemAdded});
+  const AddItemDialog({super.key});
 
   @override
   _AddItemDialogState createState() => _AddItemDialogState();
@@ -19,6 +19,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
   final _formKey = GlobalKey<FormState>();
 
   Future createItem() => db.createItemRepo(name, type, price);
+  Future<List<Item>> getAllItems() => db.getAllItemsRepo();
 
   @override
   Widget build(BuildContext context) {
@@ -128,31 +129,20 @@ class _AddItemDialogState extends State<AddItemDialog> {
           ),
           onPressed: () async {
             if (_formKey.currentState?.validate() ?? false) {
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (BuildContext context) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                },
-              );
-
               final success = await createItem();
 
-              Navigator.of(context).pop();
-
               if (success != null) {
+                // Refetch Items
+                context.read<ItemsBloc>().add(FetchItemsEvent());
+
+                Navigator.of(context).pop();
+
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Item added successfully!'),
                     duration: Duration(seconds: 2),
                   ),
                 );
-
-                widget.onItemAdded.call();
-
-                Navigator.of(context).pop();
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(

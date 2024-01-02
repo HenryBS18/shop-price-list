@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shop_price_list/db/database.dart';
 import 'package:shop_price_list/components/add_item_dialog.dart';
 import 'package:shop_price_list/pages/cart_page.dart';
 import 'package:shop_price_list/pages/price_list_page.dart';
@@ -15,13 +14,14 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   int currentIndex = 0;
   bool isKeyboardVisible = false;
 
-  final AppDb db = AppDb();
-  Future<List<Item>> getAllItems() => db.getAllItemsRepo();
-  late Future<List<Item>> items = getAllItems();
+  final List<Widget> pages = const [
+    PriceListPage(),
+    CartPage(),
+  ];
 
-  late List<Widget> pages = [
-    PriceListPage(items: items, refresh: refresh),
-    const CartPage(),
+  List<BottomNavigationBarItem> bottomNavItems = const [
+    BottomNavigationBarItem(icon: Icon(Icons.currency_exchange), label: 'Price List'),
+    BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Cart')
   ];
 
   @override
@@ -44,26 +44,11 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
     });
   }
 
-  void refresh() {
-    setState(() {
-      items = getAllItems();
-      pages = [
-        PriceListPage(items: items, refresh: refresh),
-        const CartPage(),
-      ];
-    });
-  }
-
-  List<BottomNavigationBarItem> bottomNavItems = const [
-    BottomNavigationBarItem(icon: Icon(Icons.currency_exchange), label: 'Price List'),
-    BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Cart')
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Sinar Agung"),
+        title: const Text("Shop"),
         backgroundColor: Colors.purple[100],
       ),
       floatingActionButton: Visibility(
@@ -73,7 +58,7 @@ class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
             showDialog(
               context: context,
               builder: ((context) {
-                return AddItemDialog(onItemAdded: refresh);
+                return const AddItemDialog();
               }),
             );
           },

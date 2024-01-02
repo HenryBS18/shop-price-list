@@ -9,16 +9,15 @@ class ItemCard extends StatefulWidget {
   final int id;
   final String name;
   final int price;
-  final VoidCallback refresh;
 
-  const ItemCard({Key? key, required this.id, required this.name, required this.price, required this.refresh}) : super(key: key);
+  const ItemCard({Key? key, required this.id, required this.name, required this.price}) : super(key: key);
 
   @override
   _ItemCardState createState() => _ItemCardState();
 }
 
 class _ItemCardState extends State<ItemCard> {
-  AppDb db = AppDb();
+  final AppDb db = AppDb();
 
   Future<Item> getItemById(int id) => db.getItemByIdRepo(id);
 
@@ -45,12 +44,7 @@ class _ItemCardState extends State<ItemCard> {
                       showDialog(
                         context: storedContext,
                         builder: (context) {
-                          return EditItemDialog(
-                            item: item,
-                            refresh: () async {
-                              widget.refresh.call();
-                            },
-                          );
+                          return EditItemDialog(item: item);
                         },
                       );
                     },
@@ -65,7 +59,6 @@ class _ItemCardState extends State<ItemCard> {
                           return DeleteItemDialog(
                             id: widget.id,
                             name: widget.name,
-                            refresh: widget.refresh,
                           );
                         },
                       );

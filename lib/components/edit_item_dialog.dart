@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shop_price_list/bloc/items_bloc/items_bloc.dart';
 import 'package:shop_price_list/db/database.dart';
 
 class EditItemDialog extends StatefulWidget {
   final Item item;
-  final VoidCallback refresh;
 
-  const EditItemDialog({Key? key, required this.item, required this.refresh}) : super(key: key);
+  const EditItemDialog({Key? key, required this.item}) : super(key: key);
 
   @override
   _EditItemDialogState createState() => _EditItemDialogState();
 }
 
 class _EditItemDialogState extends State<EditItemDialog> {
-  AppDb db = AppDb();
+  final AppDb db = AppDb();
   final _formKey = GlobalKey<FormState>();
 
   Future<int> updateItemById(int id, Item item) => db.updateItemByIdRepo(id, item);
@@ -132,16 +133,6 @@ class _EditItemDialogState extends State<EditItemDialog> {
           ),
           onPressed: () async {
             if (_formKey.currentState?.validate() ?? false) {
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (BuildContext context) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                },
-              );
-
               final Item item = Item(
                 id: widget.item.id,
                 name: name,
@@ -151,11 +142,9 @@ class _EditItemDialogState extends State<EditItemDialog> {
 
               final result = await updateItemById(widget.item.id, item);
 
-              // Close the progress indicator
-              Navigator.of(context).pop();
-
               if (!result.isNaN) {
-                widget.refresh.call();
+                // Refetch Items
+                context.read<ItemsBloc>().add(FetchItemsEvent());
 
                 Navigator.of(context).pop();
 
@@ -166,8 +155,6 @@ class _EditItemDialogState extends State<EditItemDialog> {
                   ),
                 );
               } else {
-                Navigator.of(context).pop();
-
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Failed to update item. Please try again.'),

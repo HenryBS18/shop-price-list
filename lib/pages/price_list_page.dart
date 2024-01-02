@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shop_price_list/bloc/items_bloc/items_bloc.dart';
+import 'package:shop_price_list/bloc/search_bloc/search_bloc.dart';
 import 'package:shop_price_list/components/item_price_list.dart';
-import 'package:shop_price_list/db/database.dart';
+import 'package:shop_price_list/utils/debouncer.dart';
 
 class PriceListPage extends StatefulWidget {
-  final Future<List<Item>> items;
-  final VoidCallback refresh;
-
-  const PriceListPage({Key? key, required this.items, required this.refresh}) : super(key: key);
+  const PriceListPage({Key? key}) : super(key: key);
 
   @override
   _PriceListPageState createState() => _PriceListPageState();
@@ -14,6 +14,7 @@ class PriceListPage extends StatefulWidget {
 
 class _PriceListPageState extends State<PriceListPage> with WidgetsBindingObserver {
   late FocusNode _searchFocusNode;
+  final Debouncer debouncer = Debouncer();
 
   @override
   void initState() {
@@ -51,14 +52,24 @@ class _PriceListPageState extends State<PriceListPage> with WidgetsBindingObserv
             ),
             TextField(
               focusNode: _searchFocusNode,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
-                hintText: "Coca Cola",
+                hintText: "Xiaomi 12 Lite",
               ),
+              onChanged: (value) {
+                debouncer.run(const Duration(microseconds: 500), () {
+                  context.read<SearchBloc>().add(SearchChangeEvent(input: value));
+
+                  if (value.isEmpty) {
+                    context.read<ItemsBloc>().add(FetchItemsEvent());
+                  }
+
+                  context.read<ItemsBloc>().add(FetchItemsLikeEvent(input: value));
+                });
+              },
             ),
             const SizedBox(height: 16),
-            ItemPriceList(items: widget.items, refresh: widget.refresh),
-            const SizedBox(height: 32)
+            const ItemPriceList(),
           ],
         ),
       ),
