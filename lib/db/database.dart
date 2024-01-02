@@ -35,6 +35,10 @@ class AppDb extends _$AppDb {
     return await (select(items)..where((tbl) => tbl.id.equals(id))).getSingle();
   }
 
+  Future<List<Item>> getItemsLikeRepo(String input) async {
+    return await (select(items)..where((tbl) => tbl.name.like("$input%"))).get();
+  }
+
   Future<int> updateItemByIdRepo(int id, Item item) async {
     return await (update(items)..where((tbl) => tbl.id.equals(id))).write(ItemsCompanion(
       name: Value(item.name),
