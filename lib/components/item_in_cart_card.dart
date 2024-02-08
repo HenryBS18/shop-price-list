@@ -37,11 +37,11 @@ class _ItemInCartCardState extends State<ItemInCartCard> {
                       }
                     });
                   },
-                  icon: Icon(Icons.remove, color: Colors.white),
-                  style: ButtonStyle(backgroundColor: MaterialStatePropertyAll<Color>(Colors.red)),
+                  icon: const Icon(Icons.remove, color: Colors.white),
+                  style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll<Color>(Colors.red)),
                 ),
                 const SizedBox(width: 16),
-                Text(total.toString(), style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                Text(total.toString(), style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
                 const SizedBox(width: 16),
                 IconButton(
                   onPressed: () {
@@ -50,11 +50,8 @@ class _ItemInCartCardState extends State<ItemInCartCard> {
                       context.read<CartBloc>().add(IncrementTotalPriceEvent(increment: widget.price));
                     });
                   },
-                  icon: Icon(
-                    Icons.add,
-                    color: Colors.white,
-                  ),
-                  style: ButtonStyle(backgroundColor: MaterialStatePropertyAll<Color>(Colors.green)),
+                  icon: const Icon(Icons.add, color: Colors.white),
+                  style: const ButtonStyle(backgroundColor: MaterialStatePropertyAll<Color>(Colors.green)),
                 ),
               ],
             )

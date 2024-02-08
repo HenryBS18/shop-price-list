@@ -16,7 +16,7 @@ class _TotalPriceInCardState extends State<TotalPriceInCart> {
     return BlocBuilder<CartBloc, int>(
       builder: (context, state) {
         return Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             border: Border(
               top: BorderSide(
                 color: Colors.black, // border color
@@ -27,13 +27,13 @@ class _TotalPriceInCardState extends State<TotalPriceInCart> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 "Total",
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               Text(
                 formatCurrency(state),
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               )
             ],
           ),
