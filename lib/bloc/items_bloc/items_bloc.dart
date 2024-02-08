@@ -22,11 +22,4 @@ class ItemsBloc extends Bloc<ItemsEvent, ItemsState> {
       emit(ItemsSuccess(items: response));
     });
   }
-
-  @override
-  void onChange(Change<ItemsState> change) {
-    super.onChange(change);
-
-    print("onChange: ${change.nextState}");
-  }
 }

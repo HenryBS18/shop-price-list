@@ -1,4 +1,4 @@
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'cart_event.dart';
 part 'cart_state.dart';
@@ -16,11 +16,5 @@ class CartBloc extends Bloc<CartEvent, int> {
     on<ResetTotalPriceEvent>((event, emit) {
       emit(0);
     });
-  }
-
-  @override
-  void onChange(Change<int> change) {
-    super.onChange(change);
-    print("total: " + change.nextState.toString());
   }
 }

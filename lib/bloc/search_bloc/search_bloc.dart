@@ -9,11 +9,4 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       emit(SearchValue(input: event.input));
     });
   }
-
-  @override
-  void onChange(Change<SearchState> change) {
-    super.onChange(change);
-
-    print("onChange input: ${change}");
-  }
 }
